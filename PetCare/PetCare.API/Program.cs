@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PetCare.API.Data; // <--- Asegúrate de tener esta línea
+using PetCare.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,13 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PetCareDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PetCareConnetion")));
 
-// Agregar controladores con vistas (para proyectos MVC)
+// Agregar controladores con vistas (MVC)
 builder.Services.AddControllersWithViews();
+
+// ðŸ‘‰ Agregar Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configurar el middleware HTTP
-if (!app.Environment.IsDevelopment())
+// ðŸ‘‰ Configurar Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -32,3 +41,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
